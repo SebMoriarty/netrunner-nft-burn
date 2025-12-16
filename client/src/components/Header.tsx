@@ -39,7 +39,7 @@ export default function Header({
               Back
             </Button>
           )}
-          <img src={netrunnerLogo} alt="Netrunner" className="h-10 w-10" />
+          <img src={netrunnerLogo} alt="Netrunner" className="h-14 w-14" />
         </div>
 
         <div className="flex items-center gap-3">

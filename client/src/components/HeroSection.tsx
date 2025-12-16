@@ -55,7 +55,7 @@ export default function HeroSection({
             <img 
               src={netroMascot} 
               alt="Netro mascot" 
-              className="h-64 lg:h-80 w-auto object-contain transform -scale-x-100"
+              className="h-64 lg:h-80 w-auto object-contain"
               style={{ filter: 'drop-shadow(0 0 20px rgba(82, 224, 186, 0.3))' }}
             />
           </div>
@@ -65,7 +65,7 @@ export default function HeroSection({
           <img 
             src={netroMascot} 
             alt="Netro mascot" 
-            className="h-40 w-auto object-contain transform -scale-x-100"
+            className="h-40 w-auto object-contain"
             style={{ filter: 'drop-shadow(0 0 15px rgba(82, 224, 186, 0.3))' }}
           />
         </div>

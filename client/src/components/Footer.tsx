@@ -1,13 +1,14 @@
 import { SiDiscord, SiX } from "react-icons/si";
 import { Button } from "@/components/ui/button";
-import logoSvg from "@assets/logo.svg";
+import netrunnerLogo from "@assets/Netrunner_Logo_1765855424358.png";
 
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-auto">
       <div className="mx-auto max-w-6xl px-4 py-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <img src={logoSvg} alt="Netrunner" className="h-5 opacity-60" />
+          <img src={netrunnerLogo} alt="Netrunner" className="h-6 w-6 opacity-70" />
+          <span className="text-sm">Netrunner</span>
         </div>
 
         <div className="flex items-center gap-4">

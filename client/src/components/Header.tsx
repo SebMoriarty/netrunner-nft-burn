@@ -1,7 +1,7 @@
 import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import logoSvg from "@assets/logo.svg";
+import netrunnerLogo from "@assets/Netrunner_Logo_1765855424358.png";
 
 interface HeaderProps {
   walletAddress?: string;
@@ -23,8 +23,9 @@ export default function Header({
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <img src={logoSvg} alt="Netrunner" className="h-7" />
+        <div className="flex items-center gap-3">
+          <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8" />
+          <span className="font-semibold text-lg tracking-tight">Netrunner</span>
         </div>
 
         <div className="flex items-center gap-3">

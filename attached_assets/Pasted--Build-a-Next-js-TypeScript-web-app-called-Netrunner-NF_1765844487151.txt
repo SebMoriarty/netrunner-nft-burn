@@ -1,0 +1,31 @@
+> Build a Next.js (TypeScript) web app called **“Netrunner NFT Burn”**.
+>
+> **Constants (hardcode for now):**
+>
+> * `INTAKE_WALLET_ADDRESS = "J6wu13dKzy2PU7qQbmxkjauf8NtysUMfmVSdN36V95Mx"`
+> * `ELIGIBLE_MINT_ALLOWLIST = ["DphFDYiifJ5NBCYXqsYVuDEynFTc2dASCRJeHQ4B4cNn"]`
+>
+> **Core UX:**
+>
+> 1. Connect a Solana wallet (Phantom/Solflare) using `@solana/wallet-adapter`.
+> 2. Fetch and display the user’s NFTs (**standard SPL NFTs, not cNFTs**) using **Helius DAS API**.
+> 3. Filter eligible NFTs by **mint allowlist** (only show NFTs whose mint is in `ELIGIBLE_MINT_ALLOWLIST`). Display image + name in a selectable grid.
+> 4. Allow selecting **up to 10** eligible NFTs. Show “Selected X/10” and a live discount preview: **3% per NFT**, max **30%**.
+> 5. Collect user info: **email** + **Discord handle**.
+> 6. On **“Burn & Claim Discount”**, build and send a Solana transaction that transfers each selected NFT (token amount 1) to `INTAKE_WALLET_ADDRESS`. The user signs in their wallet. Support standard SPL token accounts (and handle token account discovery for each mint).
+> 7. Show a confirmation screen with tx signature, number of NFTs sent, and expected discount.
+>
+> **Backend automation (Google Sheets as DB):**
+> 8) API route `POST /api/request-burn` records: timestamp, wallet address, email, discord handle, selected mint addresses, burn count, discount percent, transfer tx signature, status (`requested`, `received`, `code_sent`).
+> 9) Webhook endpoint `POST /api/helius-webhook` receives **Helius webhook** events for transfers into the intake wallet, verifies webhook secret, matches incoming mint(s) to a pending request, updates status to `received`.
+> 10) Generate a unique discount code per completed request (no per-wallet limits): `NR-BURN-<tier>-<random>`. Store in the sheet.
+> 11) Send the code via email using **Resend** and set status to `code_sent`.
+>
+> **Notes / Requirements:**
+>
+> * Do not implement compressed NFT logic.
+> * Do not enforce one-code-per-wallet; codes are issued per successful transfer/request.
+> * Provide env var placeholders: `HELIUS_API_KEY`, `HELIUS_WEBHOOK_SECRET`, Google Sheets credentials + `SHEET_ID`, `RESEND_API_KEY`.
+> * Include error handling: no eligible NFTs found, select >10, tx rejected, webhook event doesn’t match, duplicate webhook delivery.
+> * Add a simple status endpoint `GET /api/status?tx=<sig>` returning request status and code (if sent).
+

@@ -59,6 +59,10 @@ export default function Home() {
     setAppState("disconnected");
   }, []);
 
+  const handleBackToHome = useCallback(() => {
+    handleDisconnectWallet();
+  }, [handleDisconnectWallet]);
+
   const handleToggleNFT = useCallback((nft: NFT) => {
     setSelectedNFTs((prev) => {
       const isSelected = prev.some((n) => n.id === nft.id);
@@ -148,6 +152,8 @@ export default function Home() {
     setAppState("selecting");
   }, []);
 
+  const showBackButton = appState === "loading" || appState === "selecting" || appState === "form";
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header
@@ -155,6 +161,8 @@ export default function Home() {
         isConnecting={appState === "loading" && !walletAddress}
         onConnectWallet={handleConnectWallet}
         onDisconnectWallet={handleDisconnectWallet}
+        showBack={showBackButton}
+        onBack={handleBackToHome}
       />
 
       <main className="flex-1">

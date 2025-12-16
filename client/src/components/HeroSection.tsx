@@ -1,6 +1,7 @@
 import { Wallet, Flame, Percent, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import netroMascot from "@assets/NETRO_FIGMA_2_1765856868214.png";
 
 interface HeroSectionProps {
   onConnectWallet: () => void;
@@ -20,32 +21,54 @@ export default function HeroSection({
         backgroundSize: '60px 60px'
       }} />
       
-      <div className="relative z-10 text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-          <Flame className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">NFT Burn Program</span>
+      <div className="relative z-10 w-full max-w-4xl mx-auto">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+          <div className="text-center lg:text-left flex-1">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <Flame className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-primary">NFT Burn Program</span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+              Burn NFTs, Claim Discounts
+            </h1>
+            
+            <p className="text-lg text-muted-foreground mb-8 max-w-lg">
+              Earn up to <span className="text-primary font-semibold">30% off</span> by burning eligible NFTs. 
+              Each NFT burned unlocks <span className="text-primary font-semibold">3% discount</span>, 
+              stack up to 10 for maximum savings.
+            </p>
+
+            <Button
+              size="lg"
+              onClick={onConnectWallet}
+              disabled={isConnecting}
+              className="text-base px-8"
+              data-testid="button-hero-connect"
+            >
+              <Wallet className="h-5 w-5 mr-2" />
+              {isConnecting ? "Connecting..." : "Connect Wallet to Start"}
+            </Button>
+          </div>
+
+          <div className="relative flex-shrink-0 hidden md:block">
+            <img 
+              src={netroMascot} 
+              alt="Netro mascot" 
+              className="h-64 lg:h-80 w-auto object-contain transform -scale-x-100"
+              style={{ filter: 'drop-shadow(0 0 20px rgba(82, 224, 186, 0.3))' }}
+            />
+          </div>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-          Burn NFTs, Claim Discounts
-        </h1>
-        
-        <p className="text-lg text-muted-foreground mb-8 max-w-lg mx-auto">
-          Earn up to <span className="text-primary font-semibold">30% off</span> by burning eligible NFTs. 
-          Each NFT burned unlocks <span className="text-primary font-semibold">3% discount</span>, 
-          stack up to 10 for maximum savings.
-        </p>
-
-        <Button
-          size="lg"
-          onClick={onConnectWallet}
-          disabled={isConnecting}
-          className="text-base px-8"
-          data-testid="button-hero-connect"
-        >
-          <Wallet className="h-5 w-5 mr-2" />
-          {isConnecting ? "Connecting..." : "Connect Wallet to Start"}
-        </Button>
+        <div className="md:hidden flex justify-center mt-8">
+          <img 
+            src={netroMascot} 
+            alt="Netro mascot" 
+            className="h-40 w-auto object-contain transform -scale-x-100"
+            style={{ filter: 'drop-shadow(0 0 15px rgba(82, 224, 186, 0.3))' }}
+          />
+        </div>
       </div>
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-4 mt-16 w-full max-w-3xl">

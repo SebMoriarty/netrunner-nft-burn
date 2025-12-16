@@ -7,8 +7,7 @@ export default function Footer() {
     <footer className="border-t border-border mt-auto">
       <div className="mx-auto max-w-6xl px-4 py-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <img src={netrunnerLogo} alt="Netrunner" className="h-6 w-6 opacity-70" />
-          <span className="text-sm">Netrunner</span>
+          <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8 opacity-70" />
         </div>
 
         <div className="flex items-center gap-4">

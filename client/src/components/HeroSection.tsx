@@ -14,10 +14,10 @@ export default function HeroSection({
   return (
     <div className="relative min-h-[60vh] flex flex-col items-center justify-center px-4 py-16">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
-        backgroundImage: `linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px),
-                          linear-gradient(0deg, hsl(var(--primary) / 0.1) 1px, transparent 1px)`,
-        backgroundSize: '40px 40px'
+      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+        backgroundImage: `linear-gradient(45deg, hsl(161 70% 60% / 0.1) 1px, transparent 1px),
+                          linear-gradient(-45deg, hsl(161 70% 60% / 0.1) 1px, transparent 1px)`,
+        backgroundSize: '60px 60px'
       }} />
       
       <div className="relative z-10 text-center max-w-2xl mx-auto">
@@ -31,8 +31,8 @@ export default function HeroSection({
         </h1>
         
         <p className="text-lg text-muted-foreground mb-8 max-w-lg mx-auto">
-          Earn up to <span className="text-foreground font-semibold">30% off</span> by burning eligible NFTs. 
-          Each NFT burned unlocks <span className="text-foreground font-semibold">3% discount</span>, 
+          Earn up to <span className="text-primary font-semibold">30% off</span> by burning eligible NFTs. 
+          Each NFT burned unlocks <span className="text-primary font-semibold">3% discount</span>, 
           stack up to 10 for maximum savings.
         </p>
 

@@ -1,6 +1,5 @@
 import { Flame, Percent, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface SelectionSummaryProps {
   selectedCount: number;
@@ -16,29 +15,40 @@ export default function SelectionSummary({
   onContinue,
 }: SelectionSummaryProps) {
   return (
-    <div className="sticky bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto max-w-6xl px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Selected:</span>
-            <Badge variant="secondary" className="font-mono">
-              {selectedCount}/{maxSelection}
-            </Badge>
+    <div className="sticky bottom-0 z-40 border-t border-primary/20 bg-background/98 backdrop-blur supports-[backdrop-filter]:bg-background/90 shadow-lg shadow-primary/5">
+      <div className="mx-auto max-w-6xl px-6 md:px-10 py-5 flex flex-wrap items-center justify-between gap-6">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Flame className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Selected</span>
+              <div className="text-xl font-bold">
+                <span className="text-primary">{selectedCount}</span>
+                <span className="text-muted-foreground">/{maxSelection}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Percent className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Discount:</span>
-            <span className="text-2xl font-bold text-primary">
-              {discountPercent}%
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Percent className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Discount</span>
+              <div className="text-2xl font-bold text-primary">
+                {discountPercent}%
+              </div>
+            </div>
           </div>
         </div>
 
         <Button
+          size="lg"
           onClick={onContinue}
           disabled={selectedCount === 0}
+          className="px-8 shadow-md shadow-primary/20"
           data-testid="button-continue"
         >
           Continue

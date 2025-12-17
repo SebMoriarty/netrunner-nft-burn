@@ -1,4 +1,5 @@
-import { Wallet, ArrowLeft } from "lucide-react";
+import { Wallet, Home } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.png";
 
@@ -7,8 +8,6 @@ interface HeaderProps {
   isConnecting?: boolean;
   onConnectWallet: () => void;
   onDisconnectWallet?: () => void;
-  showBack?: boolean;
-  onBack?: () => void;
 }
 
 export default function Header({
@@ -16,9 +15,10 @@ export default function Header({
   isConnecting = false,
   onConnectWallet,
   onDisconnectWallet,
-  showBack = false,
-  onBack,
 }: HeaderProps) {
+  const [location] = useLocation();
+  const isHome = location === "/";
+
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
@@ -26,20 +26,23 @@ export default function Header({
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-6 md:px-10 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          {showBack && onBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="mr-2"
-              data-testid="button-header-back"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Home
+        <div className="flex items-center gap-4">
+          <Link href="/" data-testid="link-logo-home">
+            <img 
+              src={netrunnerLogo} 
+              alt="Netrunner" 
+              className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity" 
+            />
+          </Link>
+          
+          {!isHome && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/" data-testid="link-nav-home">
+                <Home className="h-4 w-4 mr-1" />
+                Home
+              </Link>
             </Button>
           )}
-          <img src={netrunnerLogo} alt="Netrunner" className="h-12 w-12" />
         </div>
 
         <div className="flex items-center gap-3">
@@ -47,7 +50,7 @@ export default function Header({
             <Button
               variant="outline"
               onClick={onDisconnectWallet}
-              className="flex items-center gap-2 shadow-sm shadow-primary/20 border-primary/30 hover:border-primary/50"
+              className="flex items-center gap-2 border-primary/30"
               style={{ 
                 boxShadow: '0 0 12px rgba(82, 224, 186, 0.15), 0 2px 4px rgba(0,0,0,0.1)' 
               }}
@@ -60,6 +63,7 @@ export default function Header({
             </Button>
           ) : (
             <Button
+              variant="outline"
               onClick={onConnectWallet}
               disabled={isConnecting}
               data-testid="button-connect-wallet"

@@ -1,4 +1,5 @@
-import { CheckCircle, Copy, ExternalLink, Flame, RefreshCw, Mail } from "lucide-react";
+import { CheckCircle, Copy, ExternalLink, Flame, RefreshCw, Mail, User, Home } from "lucide-react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,6 @@ interface ConfirmationScreenProps {
   burnCount: number;
   discountPercent: number;
   codeStatus: "pending" | "processing" | "sent";
-  onBurnMore: () => void;
   onCheckStatus: () => void;
 }
 
@@ -18,7 +18,6 @@ export default function ConfirmationScreen({
   burnCount,
   discountPercent,
   codeStatus,
-  onBurnMore,
   onCheckStatus,
 }: ConfirmationScreenProps) {
   const { toast } = useToast();
@@ -73,7 +72,7 @@ export default function ConfirmationScreen({
                 </code>
                 <Button
                   size="icon"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => copyToClipboard(txSignature)}
                   data-testid="button-copy-sig"
                 >
@@ -81,7 +80,7 @@ export default function ConfirmationScreen({
                 </Button>
                 <Button
                   size="icon"
-                  variant="outline"
+                  variant="ghost"
                   asChild
                   data-testid="button-view-explorer"
                 >
@@ -133,10 +132,20 @@ export default function ConfirmationScreen({
           </div>
         </Card>
 
-        <Button onClick={onBurnMore} variant="outline" data-testid="button-burn-more">
-          <Flame className="h-4 w-4 mr-2" />
-          Burn More NFTs
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button asChild data-testid="button-view-profile">
+            <Link href="/profile">
+              <User className="h-4 w-4 mr-2" />
+              View Your Profile
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild data-testid="button-return-home">
+            <Link href="/">
+              <Home className="h-4 w-4 mr-2" />
+              Return Home
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

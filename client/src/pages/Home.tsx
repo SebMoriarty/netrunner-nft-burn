@@ -9,8 +9,10 @@ import ConfirmationScreen from "@/components/ConfirmationScreen";
 import Footer from "@/components/Footer";
 import type { NFT } from "@/components/NFTCard";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Wallet } from "lucide-react";
 
-type AppState = "disconnected" | "loading" | "selecting" | "form" | "transaction" | "confirmation";
+type AppState = "home" | "selecting" | "loading" | "form" | "transaction" | "confirmation";
 type TxStatus = "preparing" | "signing" | "processing" | "error";
 
 const MAX_SELECTION = 10;
@@ -26,7 +28,7 @@ const MOCK_NFTS: NFT[] = Array.from({ length: 8 }, (_, i) => ({
 
 export default function Home() {
   const { toast } = useToast();
-  const [appState, setAppState] = useState<AppState>("disconnected");
+  const [appState, setAppState] = useState<AppState>("home");
   const [walletAddress, setWalletAddress] = useState<string | undefined>();
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [selectedNFTs, setSelectedNFTs] = useState<NFT[]>([]);
@@ -39,29 +41,28 @@ export default function Home() {
 
   const discountPercent = Math.min(selectedNFTs.length * DISCOUNT_PER_NFT, 30);
 
-  // todo: replace with actual wallet connection
-  const handleConnectWallet = useCallback(() => {
-    setAppState("loading");
-    setIsLoadingNFTs(true);
+  const handleGetStarted = useCallback(() => {
+    setAppState("selecting");
+  }, []);
 
+  const handleConnectWallet = useCallback(() => {
+    if (walletAddress) return;
+    
+    setIsLoadingNFTs(true);
+    // todo: replace with actual wallet connection
     setTimeout(() => {
       setWalletAddress("J6wu13dKzy2PU7qQbmxkjauf8NtysUMfmVSdN36V95Mx");
       setNfts(MOCK_NFTS);
       setIsLoadingNFTs(false);
-      setAppState("selecting");
-    }, 1500);
-  }, []);
+    }, 1000);
+  }, [walletAddress]);
 
   const handleDisconnectWallet = useCallback(() => {
     setWalletAddress(undefined);
     setNfts([]);
     setSelectedNFTs([]);
-    setAppState("disconnected");
+    setAppState("home");
   }, []);
-
-  const handleBackToHome = useCallback(() => {
-    handleDisconnectWallet();
-  }, [handleDisconnectWallet]);
 
   const handleToggleNFT = useCallback((nft: NFT) => {
     setSelectedNFTs((prev) => {
@@ -86,7 +87,7 @@ export default function Home() {
     setAppState("form");
   }, [selectedNFTs.length]);
 
-  const handleBack = useCallback(() => {
+  const handleBackToSelection = useCallback(() => {
     setAppState("selecting");
   }, []);
 
@@ -145,35 +146,23 @@ export default function Home() {
     }, 1000);
   }, [toast]);
 
-  const handleBurnMore = useCallback(() => {
-    setSelectedNFTs([]);
-    setTxSignature("");
-    setCodeStatus("pending");
-    setAppState("selecting");
-  }, []);
-
-  const showBackButton = appState === "loading" || appState === "selecting" || appState === "form";
+  const showConnectPrompt = appState === "selecting" && !walletAddress && !isLoadingNFTs;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header
         walletAddress={walletAddress}
-        isConnecting={appState === "loading" && !walletAddress}
+        isConnecting={isLoadingNFTs}
         onConnectWallet={handleConnectWallet}
         onDisconnectWallet={handleDisconnectWallet}
-        showBack={showBackButton}
-        onBack={handleBackToHome}
       />
 
       <main className="flex-1">
-        {appState === "disconnected" && (
-          <HeroSection
-            onConnectWallet={handleConnectWallet}
-            isConnecting={false}
-          />
+        {appState === "home" && (
+          <HeroSection onGetStarted={handleGetStarted} />
         )}
 
-        {(appState === "loading" || appState === "selecting") && (
+        {appState === "selecting" && (
           <div className="mx-auto max-w-6xl px-6 md:px-10 py-8">
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-2">Your Eligible NFTs</h2>
@@ -182,13 +171,27 @@ export default function Home() {
               </p>
             </div>
 
-            <NFTGrid
-              nfts={nfts}
-              selectedNFTs={selectedNFTs}
-              maxSelection={MAX_SELECTION}
-              isLoading={isLoadingNFTs}
-              onToggleNFT={handleToggleNFT}
-            />
+            {showConnectPrompt ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Wallet className="h-16 w-16 text-muted-foreground/50 mb-6" />
+                <h3 className="text-xl font-medium mb-2">Connect Your Wallet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                  Connect your Solana wallet to view your eligible NFTs for burning.
+                </p>
+                <Button onClick={handleConnectWallet} data-testid="button-connect-prompt">
+                  <Wallet className="h-4 w-4 mr-2" />
+                  Connect Wallet
+                </Button>
+              </div>
+            ) : (
+              <NFTGrid
+                nfts={nfts}
+                selectedNFTs={selectedNFTs}
+                maxSelection={MAX_SELECTION}
+                isLoading={isLoadingNFTs}
+                onToggleNFT={handleToggleNFT}
+              />
+            )}
           </div>
         )}
 
@@ -199,7 +202,7 @@ export default function Home() {
               discountPercent={discountPercent}
               isSubmitting={isSubmitting}
               onSubmit={handleSubmit}
-              onBack={handleBack}
+              onBack={handleBackToSelection}
             />
           </div>
         )}
@@ -211,14 +214,13 @@ export default function Home() {
               burnCount={selectedNFTs.length}
               discountPercent={discountPercent}
               codeStatus={codeStatus}
-              onBurnMore={handleBurnMore}
               onCheckStatus={handleCheckStatus}
             />
           </div>
         )}
       </main>
 
-      {(appState === "loading" || appState === "selecting") && selectedNFTs.length > 0 && (
+      {appState === "selecting" && walletAddress && selectedNFTs.length > 0 && (
         <SelectionSummary
           selectedCount={selectedNFTs.length}
           maxSelection={MAX_SELECTION}

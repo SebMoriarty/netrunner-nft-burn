@@ -1,15 +1,13 @@
-import { Wallet, Flame, Percent, Zap } from "lucide-react";
+import { ArrowRight, Flame, Percent, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import netroMascot from "@assets/NETRO_FIGMA_2_1765856868214.png";
 
 interface HeroSectionProps {
-  onConnectWallet: () => void;
-  isConnecting?: boolean;
+  onGetStarted: () => void;
 }
 
 export default function HeroSection({
-  onConnectWallet,
-  isConnecting = false,
+  onGetStarted,
 }: HeroSectionProps) {
   return (
     <div className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 md:px-10 py-16">
@@ -39,14 +37,12 @@ export default function HeroSection({
             </p>
 
             <Button
-              size="lg"
-              onClick={onConnectWallet}
-              disabled={isConnecting}
-              className="text-base px-10 py-6 text-lg shadow-lg shadow-primary/25"
-              data-testid="button-hero-connect"
+              onClick={onGetStarted}
+              className="px-6"
+              data-testid="button-get-started"
             >
-              <Wallet className="h-5 w-5 mr-2" />
-              {isConnecting ? "Connecting..." : "Connect Wallet to Start"}
+              Get Started
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
 

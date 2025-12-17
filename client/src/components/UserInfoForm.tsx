@@ -47,9 +47,9 @@ export default function UserInfoForm({
   });
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl w-full">
-        <div className="flex flex-col justify-center">
+    <div className="min-h-[60vh] flex items-start justify-center py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl w-full items-start">
+        <div className="flex flex-col">
           <Button
             variant="ghost"
             onClick={onBack}
@@ -113,19 +113,18 @@ export default function UserInfoForm({
 
               <Button
                 type="submit"
-                size="lg"
-                className="w-full mt-6 shadow-md shadow-primary/20"
+                className="w-full mt-6"
                 disabled={isSubmitting}
                 data-testid="button-burn"
               >
-                <Flame className="h-5 w-5 mr-2" />
+                <Flame className="h-4 w-4 mr-2" />
                 {isSubmitting ? "Processing..." : "Burn & Claim Discount"}
               </Button>
             </form>
           </Form>
         </div>
 
-        <div className="flex items-center">
+        <div className="lg:mt-14">
           <Card className="p-6 w-full">
             <h3 className="font-semibold mb-4">Burn Summary</h3>
 
@@ -141,7 +140,7 @@ export default function UserInfoForm({
               <span className="text-3xl font-bold text-primary">{discountPercent}%</span>
             </div>
 
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-2 max-h-48 overflow-y-auto">
               {selectedNFTs.map((nft) => (
                 <div
                   key={nft.id}

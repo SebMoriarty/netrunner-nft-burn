@@ -1,7 +1,5 @@
-// Helius DAS API integration for fetching NFTs
-
-const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+// Solana DAS API integration for fetching NFTs
+// Supports both Helius and QuickNode RPC providers
 
 // Eligible mint allowlist - only NFTs with these collection mints can be burned
 const ELIGIBLE_MINTS = new Set([
@@ -29,14 +27,29 @@ interface DASAsset {
   grouping?: Array<{ group_key: string; group_value: string }>;
 }
 
+// Get RPC URL from environment - supports QuickNode or Helius
+function getRpcUrl(): string | null {
+  // QuickNode RPC URL (includes API key in the URL from env)
+  if (process.env.QUICKNODE_RPC_URL) {
+    return process.env.QUICKNODE_RPC_URL;
+  }
+  // Helius RPC URL (includes API key in the URL from env)
+  if (process.env.HELIUS_RPC_URL) {
+    return process.env.HELIUS_RPC_URL;
+  }
+  return null;
+}
+
 export async function fetchWalletNFTs(walletAddress: string): Promise<HeliusNFT[]> {
-  if (!HELIUS_API_KEY) {
-    console.warn('HELIUS_API_KEY not configured, returning empty array');
+  const rpcUrl = getRpcUrl();
+  
+  if (!rpcUrl) {
+    console.warn('No RPC URL configured (QUICKNODE_RPC_URL or HELIUS_RPC_URL), returning empty array');
     return [];
   }
 
   try {
-    const response = await fetch(HELIUS_RPC_URL, {
+    const response = await fetch(rpcUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -55,13 +68,13 @@ export async function fetchWalletNFTs(walletAddress: string): Promise<HeliusNFT[
     });
 
     if (!response.ok) {
-      throw new Error(`Helius API error: ${response.status}`);
+      throw new Error(`RPC API error: ${response.status}`);
     }
 
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(`Helius RPC error: ${data.error.message}`);
+      throw new Error(`RPC error: ${data.error.message}`);
     }
 
     const assets: DASAsset[] = data.result?.items || [];
@@ -89,7 +102,7 @@ export async function fetchWalletNFTs(walletAddress: string): Promise<HeliusNFT[
              `https://placehold.co/400x400/1a1a2e/00d9ff?text=${encodeURIComponent(asset.content.metadata?.name || 'NFT')}`,
     }));
   } catch (error) {
-    console.error('Failed to fetch NFTs from Helius:', error);
+    console.error('Failed to fetch NFTs:', error);
     return [];
   }
 }

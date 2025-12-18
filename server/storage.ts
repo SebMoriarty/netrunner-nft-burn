@@ -1,38 +1,58 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
+import { db } from "./db";
+import { burnRequests, type InsertBurnRequest, type BurnRequest } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createBurnRequest(request: InsertBurnRequest): Promise<BurnRequest>;
+  getBurnRequest(id: string): Promise<BurnRequest | undefined>;
+  getBurnRequestByTxSignature(txSignature: string): Promise<BurnRequest | undefined>;
+  getBurnRequestsByWallet(walletAddress: string): Promise<BurnRequest[]>;
+  updateBurnRequestStatus(id: string, status: string, discountCode?: string): Promise<BurnRequest | undefined>;
+  updateBurnRequestTxSignature(id: string, txSignature: string): Promise<BurnRequest | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async createBurnRequest(request: InsertBurnRequest): Promise<BurnRequest> {
+    const [burnRequest] = await db.insert(burnRequests).values(request).returning();
+    return burnRequest;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getBurnRequest(id: string): Promise<BurnRequest | undefined> {
+    const [burnRequest] = await db.select().from(burnRequests).where(eq(burnRequests.id, id));
+    return burnRequest;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getBurnRequestByTxSignature(txSignature: string): Promise<BurnRequest | undefined> {
+    const [burnRequest] = await db.select().from(burnRequests).where(eq(burnRequests.txSignature, txSignature));
+    return burnRequest;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getBurnRequestsByWallet(walletAddress: string): Promise<BurnRequest[]> {
+    return db.select().from(burnRequests)
+      .where(eq(burnRequests.walletAddress, walletAddress))
+      .orderBy(desc(burnRequests.createdAt));
+  }
+
+  async updateBurnRequestStatus(id: string, status: string, discountCode?: string): Promise<BurnRequest | undefined> {
+    const updateData: Partial<BurnRequest> = { status };
+    if (discountCode) {
+      updateData.discountCode = discountCode;
+    }
+    const [updated] = await db.update(burnRequests)
+      .set(updateData)
+      .where(eq(burnRequests.id, id))
+      .returning();
+    return updated;
+  }
+
+  async updateBurnRequestTxSignature(id: string, txSignature: string): Promise<BurnRequest | undefined> {
+    const [updated] = await db.update(burnRequests)
+      .set({ txSignature })
+      .where(eq(burnRequests.id, id))
+      .returning();
+    return updated;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

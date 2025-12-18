@@ -1,4 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import NFTGrid from "@/components/NFTGrid";
@@ -11,6 +13,7 @@ import type { NFT } from "@/components/NFTCard";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 type AppState = "home" | "selecting" | "loading" | "form" | "transaction" | "confirmation";
 type TxStatus = "preparing" | "signing" | "processing" | "error";
@@ -18,7 +21,7 @@ type TxStatus = "preparing" | "signing" | "processing" | "error";
 const MAX_SELECTION = 10;
 const DISCOUNT_PER_NFT = 3;
 
-// todo: remove mock functionality
+// todo: replace with Helius DAS API call
 const MOCK_NFTS: NFT[] = Array.from({ length: 8 }, (_, i) => ({
   id: String(i + 1),
   mint: `DphFDYiifJ5NBCYXqsYVuDEynFTc2dASCRJeHQ4B4cNn`,
@@ -28,8 +31,10 @@ const MOCK_NFTS: NFT[] = Array.from({ length: 8 }, (_, i) => ({
 
 export default function Home() {
   const { toast } = useToast();
+  const { publicKey, connected, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
+  
   const [appState, setAppState] = useState<AppState>("home");
-  const [walletAddress, setWalletAddress] = useState<string | undefined>();
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [selectedNFTs, setSelectedNFTs] = useState<NFT[]>([]);
   const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
@@ -38,31 +43,36 @@ export default function Home() {
   const [txSignature, setTxSignature] = useState<string>("");
   const [codeStatus, setCodeStatus] = useState<"pending" | "processing" | "sent">("pending");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [burnRequestId, setBurnRequestId] = useState<string>("");
 
+  const walletAddress = publicKey?.toBase58();
   const discountPercent = Math.min(selectedNFTs.length * DISCOUNT_PER_NFT, 30);
+
+  useEffect(() => {
+    if (connected && walletAddress && appState === "selecting") {
+      setIsLoadingNFTs(true);
+      // todo: Replace with actual Helius DAS API call
+      setTimeout(() => {
+        setNfts(MOCK_NFTS);
+        setIsLoadingNFTs(false);
+      }, 1000);
+    }
+  }, [connected, walletAddress, appState]);
 
   const handleGetStarted = useCallback(() => {
     setAppState("selecting");
   }, []);
 
   const handleConnectWallet = useCallback(() => {
-    if (walletAddress) return;
-    
-    setIsLoadingNFTs(true);
-    // todo: replace with actual wallet connection
-    setTimeout(() => {
-      setWalletAddress("J6wu13dKzy2PU7qQbmxkjauf8NtysUMfmVSdN36V95Mx");
-      setNfts(MOCK_NFTS);
-      setIsLoadingNFTs(false);
-    }, 1000);
-  }, [walletAddress]);
+    setVisible(true);
+  }, [setVisible]);
 
   const handleDisconnectWallet = useCallback(() => {
-    setWalletAddress(undefined);
+    disconnect();
     setNfts([]);
     setSelectedNFTs([]);
     setAppState("home");
-  }, []);
+  }, [disconnect]);
 
   const handleToggleNFT = useCallback((nft: NFT) => {
     setSelectedNFTs((prev) => {
@@ -91,36 +101,51 @@ export default function Home() {
     setAppState("selecting");
   }, []);
 
-  // todo: replace with actual transaction logic
   const handleSubmit = useCallback(async (data: { email: string; discord: string }) => {
+    if (!walletAddress) return;
+    
     setIsSubmitting(true);
     setAppState("transaction");
     setTxStatus("preparing");
     setTxError(undefined);
 
     try {
-      await new Promise((r) => setTimeout(r, 1000));
+      const nftMints = selectedNFTs.map(nft => nft.mint);
+      
+      const response = await apiRequest("POST", "/api/burn-requests", {
+        walletAddress,
+        email: data.email,
+        discord: data.discord,
+        nftMints,
+      });
+      
+      const burnRequest = await response.json();
+      setBurnRequestId(burnRequest.id);
+      
       setTxStatus("signing");
 
+      // todo: Replace with actual NFT transfer transaction
       await new Promise((r) => setTimeout(r, 2000));
       setTxStatus("processing");
 
       await new Promise((r) => setTimeout(r, 1500));
 
       const mockSignature = "5wHu1qwD7HXiQ7NTBZPy6RVYJYmBqKYFnJ8RbLpKQqEpN7MkHNqCXmv9kgYvJZ3xgfNqYpUWJSGJ5QkPvYQPZ1Hk";
+      
+      await apiRequest("PATCH", `/api/burn-requests/${burnRequest.id}/transaction`, {
+        txSignature: mockSignature,
+      });
+      
       setTxSignature(mockSignature);
       setCodeStatus("pending");
       setAppState("confirmation");
-
-      console.log("Form data:", data);
-      console.log("Selected NFTs:", selectedNFTs);
     } catch (error) {
       setTxStatus("error");
       setTxError(error instanceof Error ? error.message : "Transaction failed");
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedNFTs]);
+  }, [selectedNFTs, walletAddress]);
 
   const handleCancelTransaction = useCallback(() => {
     setAppState("form");
@@ -132,27 +157,46 @@ export default function Home() {
     setTxError(undefined);
   }, []);
 
-  const handleCheckStatus = useCallback(() => {
+  const handleCheckStatus = useCallback(async () => {
+    if (!burnRequestId) return;
+    
     toast({
       title: "Checking status...",
       description: "Fetching the latest status from the server.",
     });
-    setTimeout(() => {
-      setCodeStatus("sent");
+    
+    try {
+      const response = await fetch(`/api/burn-requests/${burnRequestId}`);
+      const burnRequest = await response.json();
+      
+      if (burnRequest.status === "verified" && burnRequest.discountCode) {
+        setCodeStatus("sent");
+        toast({
+          title: "Status updated",
+          description: "Your discount code has been sent to your email!",
+        });
+      } else {
+        toast({
+          title: "Still processing",
+          description: "Your burn is being verified. Please check back soon.",
+        });
+      }
+    } catch {
       toast({
-        title: "Status updated",
-        description: "Your discount code has been sent to your email!",
+        title: "Error",
+        description: "Failed to check status. Please try again.",
+        variant: "destructive",
       });
-    }, 1000);
-  }, [toast]);
+    }
+  }, [burnRequestId, toast]);
 
-  const showConnectPrompt = appState === "selecting" && !walletAddress && !isLoadingNFTs;
+  const showConnectPrompt = appState === "selecting" && !connected && !isLoadingNFTs;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header
         walletAddress={walletAddress}
-        isConnecting={isLoadingNFTs}
+        isConnecting={false}
         onConnectWallet={handleConnectWallet}
         onDisconnectWallet={handleDisconnectWallet}
       />
@@ -220,7 +264,7 @@ export default function Home() {
         )}
       </main>
 
-      {appState === "selecting" && walletAddress && selectedNFTs.length > 0 && (
+      {appState === "selecting" && connected && selectedNFTs.length > 0 && (
         <SelectionSummary
           selectedCount={selectedNFTs.length}
           maxSelection={MAX_SELECTION}

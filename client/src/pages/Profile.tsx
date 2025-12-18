@@ -1,66 +1,36 @@
 import { Copy, ExternalLink, Flame, Wallet } from "lucide-react";
 import { Link } from "wouter";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useCallback } from "react";
-
-interface BurnRecord {
-  id: string;
-  date: string;
-  nftCount: number;
-  discountPercent: number;
-  txSignature: string;
-}
-
-// todo: remove mock functionality
-const MOCK_BURN_HISTORY: BurnRecord[] = [
-  {
-    id: "1",
-    date: "2024-12-15",
-    nftCount: 3,
-    discountPercent: 9,
-    txSignature: "5wHu1qwD7HXiQ7NTBZPy6RVYJYmBqKYFnJ8RbLpKQqEpN7MkHNqCXmv9kgYvJZ3xgfNqYpUWJSGJ5QkPvYQPZ1Hk",
-  },
-  {
-    id: "2",
-    date: "2024-12-10",
-    nftCount: 5,
-    discountPercent: 15,
-    txSignature: "3xKp2mNq8HXiQ7NTBZPy6RVYJYmBqKYFnJ8RbLpKQqEpN7MkHNqCXmv9kgYvJZ3xgfNqYpUWJSGJ5QkPvYQAbCd",
-  },
-  {
-    id: "3",
-    date: "2024-12-01",
-    nftCount: 2,
-    discountPercent: 6,
-    txSignature: "7mLq4rPs9HXiQ7NTBZPy6RVYJYmBqKYFnJ8RbLpKQqEpN7MkHNqCXmv9kgYvJZ3xgfNqYpUWJSGJ5QkPvYQEfGh",
-  },
-];
+import type { BurnRequest } from "@shared/schema";
 
 export default function Profile() {
   const { toast } = useToast();
-  const [walletAddress, setWalletAddress] = useState<string | undefined>();
-  const [isConnecting, setIsConnecting] = useState(false);
+  const { publicKey, connected, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
 
-  // todo: replace with actual wallet connection
-  const handleConnectWallet = useCallback(() => {
-    if (walletAddress) return;
-    setIsConnecting(true);
-    setTimeout(() => {
-      setWalletAddress("J6wu13dKzy2PU7qQbmxkjauf8NtysUMfmVSdN36V95Mx");
-      setIsConnecting(false);
-    }, 1000);
-  }, [walletAddress]);
+  const walletAddress = publicKey?.toBase58();
 
-  const handleDisconnectWallet = useCallback(() => {
-    setWalletAddress(undefined);
-  }, []);
+  const { data: burnHistory = [], isLoading } = useQuery<BurnRequest[]>({
+    queryKey: ["/api/burn-history", walletAddress],
+    enabled: !!walletAddress,
+  });
 
-  const burnHistory = walletAddress ? MOCK_BURN_HISTORY : [];
+  const handleConnectWallet = () => {
+    setVisible(true);
+  };
+
+  const handleDisconnectWallet = () => {
+    disconnect();
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -89,7 +59,7 @@ export default function Profile() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header
         walletAddress={walletAddress}
-        isConnecting={isConnecting}
+        isConnecting={false}
         onConnectWallet={handleConnectWallet}
         onDisconnectWallet={handleDisconnectWallet}
       />
@@ -103,18 +73,30 @@ export default function Profile() {
             </p>
           </div>
 
-          {!walletAddress ? (
+          {!connected ? (
             <Card className="p-8 text-center">
               <Wallet className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
               <h3 className="text-lg font-medium mb-2">Connect Your Wallet</h3>
               <p className="text-muted-foreground mb-4">
                 Connect your wallet to view your burn history and earned discounts.
               </p>
-              <Button onClick={handleConnectWallet} disabled={isConnecting} data-testid="button-connect-profile">
+              <Button onClick={handleConnectWallet} data-testid="button-connect-profile">
                 <Wallet className="h-4 w-4 mr-2" />
-                {isConnecting ? "Connecting..." : "Connect Wallet"}
+                Connect Wallet
               </Button>
             </Card>
+          ) : isLoading ? (
+            <>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <Skeleton className="h-24" />
+                <Skeleton className="h-24" />
+              </div>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-20" />
+                ))}
+              </div>
+            </>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-4 mb-8">
@@ -163,7 +145,7 @@ export default function Profile() {
                         <div className="flex items-center gap-6">
                           <div>
                             <div className="text-sm text-muted-foreground">Date</div>
-                            <div className="font-medium">{formatDate(record.date)}</div>
+                            <div className="font-medium">{formatDate(record.createdAt.toString())}</div>
                           </div>
                           <div>
                             <div className="text-sm text-muted-foreground">NFTs Burned</div>
@@ -178,35 +160,43 @@ export default function Profile() {
                               {record.discountPercent}%
                             </Badge>
                           </div>
+                          <div>
+                            <div className="text-sm text-muted-foreground">Status</div>
+                            <Badge variant={record.status === "verified" ? "default" : "secondary"}>
+                              {record.status}
+                            </Badge>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
-                            {truncateSignature(record.txSignature)}
-                          </code>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => copyToClipboard(record.txSignature)}
-                            data-testid={`button-copy-${record.id}`}
-                          >
-                            <Copy className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            asChild
-                            data-testid={`button-explorer-${record.id}`}
-                          >
-                            <a
-                              href={`https://explorer.solana.com/tx/${record.txSignature}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                        {record.txSignature && (
+                          <div className="flex items-center gap-2">
+                            <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+                              {truncateSignature(record.txSignature)}
+                            </code>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => copyToClipboard(record.txSignature!)}
+                              data-testid={`button-copy-${record.id}`}
                             >
-                              <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-                          </Button>
-                        </div>
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              asChild
+                              data-testid={`button-explorer-${record.id}`}
+                            >
+                              <a
+                                href={`https://explorer.solana.com/tx/${record.txSignature}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </Card>
                   ))}

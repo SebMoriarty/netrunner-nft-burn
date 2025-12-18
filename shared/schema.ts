@@ -1,18 +1,35 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
+export const burnRequests = pgTable("burn_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  walletAddress: text("wallet_address").notNull(),
+  email: text("email").notNull(),
+  discord: text("discord").notNull(),
+  nftMints: text("nft_mints").array().notNull(),
+  nftCount: integer("nft_count").notNull(),
+  discountPercent: integer("discount_percent").notNull(),
+  txSignature: text("tx_signature"),
+  status: text("status").notNull().default("pending"),
+  discountCode: text("discount_code"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertBurnRequestSchema = createInsertSchema(burnRequests).omit({
+  id: true,
+  createdAt: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type InsertBurnRequest = z.infer<typeof insertBurnRequestSchema>;
+export type BurnRequest = typeof burnRequests.$inferSelect;
+
+export const submitBurnFormSchema = z.object({
+  walletAddress: z.string().min(32, "Invalid wallet address"),
+  email: z.string().email("Invalid email address"),
+  discord: z.string().min(2, "Discord handle required"),
+  nftMints: z.array(z.string()).min(1, "At least one NFT required").max(10, "Maximum 10 NFTs"),
+});
+
+export type SubmitBurnForm = z.infer<typeof submitBurnFormSchema>;

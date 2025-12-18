@@ -25,7 +25,7 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-3 flex items-center justify-between gap-4">
+      <div className="px-4 md:px-8 lg:px-12 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/" data-testid="link-logo-home">
             <img 

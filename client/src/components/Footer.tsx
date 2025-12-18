@@ -5,7 +5,7 @@ import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.pn
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-auto">
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="px-4 md:px-8 lg:px-12 py-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-muted-foreground">
           <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8 opacity-80" />
         </div>

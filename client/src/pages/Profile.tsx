@@ -95,7 +95,7 @@ export default function Profile() {
       />
 
       <main className="flex-1">
-        <div className="mx-auto max-w-4xl px-6 md:px-10 py-8">
+        <div className="px-4 md:px-8 lg:px-12 py-8 max-w-5xl">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold mb-2">Your Burn History</h1>
             <p className="text-muted-foreground">

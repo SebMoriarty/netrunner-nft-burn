@@ -163,7 +163,7 @@ export default function Home() {
         )}
 
         {appState === "selecting" && (
-          <div className="mx-auto max-w-6xl px-6 md:px-10 py-8">
+          <div className="px-4 md:px-8 lg:px-12 py-8">
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-2">Your Eligible NFTs</h2>
               <p className="text-muted-foreground">
@@ -196,7 +196,7 @@ export default function Home() {
         )}
 
         {appState === "form" && (
-          <div className="mx-auto max-w-6xl px-6 md:px-10 py-8">
+          <div className="mx-auto max-w-5xl px-4 md:px-8 lg:px-12 py-8">
             <UserInfoForm
               selectedNFTs={selectedNFTs}
               discountPercent={discountPercent}
@@ -208,7 +208,7 @@ export default function Home() {
         )}
 
         {appState === "confirmation" && (
-          <div className="mx-auto max-w-6xl px-6 md:px-10 py-8">
+          <div className="mx-auto max-w-lg px-4 md:px-8 lg:px-12 py-8">
             <ConfirmationScreen
               txSignature={txSignature}
               burnCount={selectedNFTs.length}

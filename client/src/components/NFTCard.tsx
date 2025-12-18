@@ -31,7 +31,7 @@ export default function NFTCard({
       onClick={() => !isDisabled && onToggle(nft)}
       disabled={isDisabled && !isSelected}
       className={cn(
-        "relative group rounded-xl overflow-visible border transition-all duration-200 text-left w-full",
+        "relative group rounded-lg overflow-visible border transition-all duration-200 text-left w-full",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isSelected
           ? "border-primary bg-primary/5"
@@ -40,7 +40,7 @@ export default function NFTCard({
       )}
       data-testid={`nft-card-${nft.id}`}
     >
-      <div className="aspect-square relative overflow-hidden rounded-t-xl bg-muted">
+      <div className="aspect-square relative overflow-hidden rounded-t-lg bg-muted">
         <img
           src={nft.image}
           alt={nft.name}
@@ -49,18 +49,18 @@ export default function NFTCard({
         />
         <div
           className={cn(
-            "absolute top-2 right-2 h-6 w-6 rounded-full flex items-center justify-center transition-all",
+            "absolute top-1.5 right-1.5 h-5 w-5 rounded-full flex items-center justify-center transition-all",
             isSelected
               ? "bg-primary text-primary-foreground"
               : "bg-background/80 border border-border opacity-0 group-hover:opacity-100"
           )}
         >
-          {isSelected && <Check className="h-4 w-4" />}
+          {isSelected && <Check className="h-3 w-3" />}
         </div>
       </div>
-      <div className="p-3">
-        <h3 className="font-medium text-sm truncate">{nft.name}</h3>
-        <p className="text-xs font-mono text-muted-foreground mt-1">
+      <div className="p-2">
+        <h3 className="font-medium text-xs truncate">{nft.name}</h3>
+        <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
           {truncateMint(nft.mint)}
         </p>
       </div>

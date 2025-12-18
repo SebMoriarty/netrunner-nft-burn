@@ -16,7 +16,7 @@ export default function SelectionSummary({
 }: SelectionSummaryProps) {
   return (
     <div className="sticky bottom-0 z-40 border-t border-primary/20 bg-background/98 backdrop-blur supports-[backdrop-filter]:bg-background/90 shadow-lg shadow-primary/5">
-      <div className="mx-auto max-w-6xl px-6 md:px-10 py-5 flex flex-wrap items-center justify-between gap-6">
+      <div className="px-4 md:px-8 lg:px-12 py-5 flex flex-wrap items-center justify-between gap-6">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">

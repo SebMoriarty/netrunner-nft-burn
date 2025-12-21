@@ -175,7 +175,7 @@ export async function updateBurnRecord(
 
 export async function initializeSheet(): Promise<void> {
   if (!SHEET_ID) {
-    console.warn('GOOGLE_SHEET_ID not configured');
+    console.warn('GOOGLE_SHEET_ID not configured - Google Sheets integration disabled');
     return;
   }
 
@@ -210,8 +210,14 @@ export async function initializeSheet(): Promise<void> {
       });
       
       console.log('Initialized Google Sheet headers');
+    } else {
+      console.log('Google Sheets connected successfully');
     }
-  } catch (error) {
-    console.error('Failed to initialize Google Sheet:', error);
+  } catch (error: any) {
+    if (error?.status === 403 || error?.code === 403) {
+      console.warn('Google Sheets permission denied - the connector may not have spreadsheet access. Records will be stored in the database only.');
+    } else {
+      console.error('Failed to initialize Google Sheet:', error?.message || error);
+    }
   }
 }

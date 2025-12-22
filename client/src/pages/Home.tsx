@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { Connection } from "@solana/web3.js";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import NFTGrid from "@/components/NFTGrid";
@@ -14,6 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { createNFTTransferTransaction } from "@/lib/nftTransfer";
+
+const RPC_ENDPOINT = import.meta.env.VITE_RPC_ENDPOINT || "https://api.mainnet-beta.solana.com";
 
 type AppState = "home" | "selecting" | "loading" | "form" | "transaction" | "confirmation";
 type TxStatus = "preparing" | "signing" | "processing" | "error";
@@ -24,7 +28,7 @@ const DISCOUNT_PER_NFT = 3;
 
 export default function Home() {
   const { toast } = useToast();
-  const { publicKey, connected, disconnect } = useWallet();
+  const { publicKey, connected, disconnect, signTransaction } = useWallet();
   const { setVisible } = useWalletModal();
   
   const [appState, setAppState] = useState<AppState>("home");
@@ -106,7 +110,7 @@ export default function Home() {
   }, []);
 
   const handleSubmit = useCallback(async (data: { email: string; discord: string }) => {
-    if (!walletAddress) return;
+    if (!walletAddress || !publicKey || !signTransaction) return;
     
     setIsSubmitting(true);
     setAppState("transaction");
@@ -128,28 +132,39 @@ export default function Home() {
       
       setTxStatus("signing");
 
-      // todo: Replace with actual NFT transfer transaction
-      await new Promise((r) => setTimeout(r, 2000));
+      const connection = new Connection(RPC_ENDPOINT, "confirmed");
+      const transaction = await createNFTTransferTransaction(
+        connection,
+        publicKey,
+        nftMints
+      );
+
+      const signedTransaction = await signTransaction(transaction);
+      
       setTxStatus("processing");
 
-      await new Promise((r) => setTimeout(r, 1500));
+      const signature = await connection.sendRawTransaction(
+        signedTransaction.serialize(),
+        { skipPreflight: false, preflightCommitment: "confirmed" }
+      );
 
-      const mockSignature = "5wHu1qwD7HXiQ7NTBZPy6RVYJYmBqKYFnJ8RbLpKQqEpN7MkHNqCXmv9kgYvJZ3xgfNqYpUWJSGJ5QkPvYQPZ1Hk";
+      await connection.confirmTransaction(signature, "confirmed");
       
       await apiRequest("PATCH", `/api/burn-requests/${burnRequest.id}/transaction`, {
-        txSignature: mockSignature,
+        txSignature: signature,
       });
       
-      setTxSignature(mockSignature);
+      setTxSignature(signature);
       setCodeStatus("pending");
       setAppState("confirmation");
     } catch (error) {
+      console.error("Transaction error:", error);
       setTxStatus("error");
       setTxError(error instanceof Error ? error.message : "Transaction failed");
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedNFTs, walletAddress]);
+  }, [selectedNFTs, walletAddress, publicKey, signTransaction]);
 
   const handleCancelTransaction = useCallback(() => {
     setAppState("form");

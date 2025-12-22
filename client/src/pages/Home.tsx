@@ -21,13 +21,6 @@ type TxStatus = "preparing" | "signing" | "processing" | "error";
 const MAX_SELECTION = 10;
 const DISCOUNT_PER_NFT = 3;
 
-// todo: replace with Helius DAS API call
-const MOCK_NFTS: NFT[] = Array.from({ length: 8 }, (_, i) => ({
-  id: String(i + 1),
-  mint: `DphFDYiifJ5NBCYXqsYVuDEynFTc2dASCRJeHQ4B4cNn`,
-  name: `Netrunner #${1337 + i}`,
-  image: `https://placehold.co/400x400/1a1a2e/00d9ff?text=NFT${i + 1}`,
-}));
 
 export default function Home() {
   const { toast } = useToast();
@@ -51,13 +44,24 @@ export default function Home() {
   useEffect(() => {
     if (connected && walletAddress && appState === "selecting") {
       setIsLoadingNFTs(true);
-      // todo: Replace with actual Helius DAS API call
-      setTimeout(() => {
-        setNfts(MOCK_NFTS);
-        setIsLoadingNFTs(false);
-      }, 1000);
+      fetch(`/api/nfts/${walletAddress}`)
+        .then(res => res.json())
+        .then((data: NFT[]) => {
+          setNfts(data);
+          setIsLoadingNFTs(false);
+        })
+        .catch(err => {
+          console.error("Failed to fetch NFTs:", err);
+          setNfts([]);
+          setIsLoadingNFTs(false);
+          toast({
+            title: "Failed to load NFTs",
+            description: "Could not fetch your eligible NFTs. Please try again.",
+            variant: "destructive",
+          });
+        });
     }
-  }, [connected, walletAddress, appState]);
+  }, [connected, walletAddress, appState, toast]);
 
   const handleGetStarted = useCallback(() => {
     setAppState("selecting");

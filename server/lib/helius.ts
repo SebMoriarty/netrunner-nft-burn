@@ -35,6 +35,7 @@ interface DASAsset {
   content: {
     metadata: {
       name: string;
+      attributes?: Array<{ trait_type: string; value: string }>;
     };
     links?: {
       image?: string;
@@ -43,6 +44,26 @@ interface DASAsset {
   };
   grouping?: Array<{ group_key: string; group_value: string }>;
   creators?: DASCreator[];
+}
+
+function getAssetImage(asset: DASAsset): string {
+  // For Netrunner V2 NFTs, the individual image is in "OG Image" attribute or files[1]
+  const ogImageAttr = asset.content.metadata?.attributes?.find(
+    attr => attr.trait_type === "OG Image"
+  );
+  if (ogImageAttr?.value) {
+    return ogImageAttr.value;
+  }
+  
+  // Try the second file (often the individual image for upgraded NFTs)
+  if (asset.content.files && asset.content.files.length > 1) {
+    return asset.content.files[1].uri;
+  }
+  
+  // Fallback to primary links.image or first file
+  return asset.content.links?.image || 
+         asset.content.files?.[0]?.uri || 
+         `https://placehold.co/400x400/1a1a2e/00d9ff?text=${encodeURIComponent(asset.content.metadata?.name || 'NFT')}`;
 }
 
 // Get RPC URL from environment - supports QuickNode or Helius
@@ -128,9 +149,7 @@ export async function fetchWalletNFTs(walletAddress: string): Promise<HeliusNFT[
       id: asset.id,
       mint: asset.id,
       name: asset.content.metadata?.name || 'Unknown NFT',
-      image: asset.content.links?.image || 
-             asset.content.files?.[0]?.uri || 
-             `https://placehold.co/400x400/1a1a2e/00d9ff?text=${encodeURIComponent(asset.content.metadata?.name || 'NFT')}`,
+      image: getAssetImage(asset),
     }));
   } catch (error) {
     console.error('Failed to fetch NFTs:', error);

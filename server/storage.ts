@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql, count, countDistinct, isNotNull } from "drizzle-orm";
 import { db } from "./db";
 import { burnRequests, type InsertBurnRequest, type BurnRequest } from "@shared/schema";
 import { randomUUID } from "crypto";
@@ -10,6 +10,7 @@ export interface IStorage {
   getBurnRequestsByWallet(walletAddress: string): Promise<BurnRequest[]>;
   updateBurnRequestStatus(id: string, status: string, discountCode?: string): Promise<BurnRequest | undefined>;
   updateBurnRequestTxSignature(id: string, txSignature: string): Promise<BurnRequest | undefined>;
+  getBurnStats(): Promise<{ totalBurns: number; discountsClaimed: number; activeBurners: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -52,6 +53,26 @@ export class DatabaseStorage implements IStorage {
       .where(eq(burnRequests.id, id))
       .returning();
     return updated;
+  }
+
+  async getBurnStats(): Promise<{ totalBurns: number; discountsClaimed: number; activeBurners: number }> {
+    const [totalResult] = await db.select({ 
+      count: sql<number>`COALESCE(SUM(nft_count), 0)::int` 
+    }).from(burnRequests).where(isNotNull(burnRequests.txSignature));
+    
+    const [claimedResult] = await db.select({ 
+      count: count() 
+    }).from(burnRequests).where(isNotNull(burnRequests.discountCode));
+    
+    const [burnersResult] = await db.select({ 
+      count: countDistinct(burnRequests.walletAddress) 
+    }).from(burnRequests).where(isNotNull(burnRequests.txSignature));
+
+    return {
+      totalBurns: totalResult?.count || 0,
+      discountsClaimed: claimedResult?.count || 0,
+      activeBurners: burnersResult?.count || 0,
+    };
   }
 }
 

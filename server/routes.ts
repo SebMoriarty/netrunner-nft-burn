@@ -144,6 +144,17 @@ export async function registerRoutes(
     }
   });
 
+  // Get burn statistics
+  app.get("/api/stats", async (req, res) => {
+    try {
+      const stats = await storage.getBurnStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
   app.post("/api/webhook/helius", async (req, res) => {
     try {
       const signature = req.body?.signature || req.body?.[0]?.signature;

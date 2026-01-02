@@ -1,14 +1,26 @@
 import { ArrowRight, Flame, Percent, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import netroMascot from "@assets/NETRO_FIGMA_2_1765856868214.png";
 
 interface HeroSectionProps {
   onGetStarted: () => void;
 }
 
+interface BurnStats {
+  totalBurns: number;
+  discountsClaimed: number;
+  activeBurners: number;
+}
+
 export default function HeroSection({
   onGetStarted,
 }: HeroSectionProps) {
+  const { data: stats } = useQuery<BurnStats>({
+    queryKey: ['/api/stats'],
+    refetchInterval: 30000,
+  });
+
   return (
     <div className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 md:px-10 py-16">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-primary/3 to-transparent pointer-events-none" />
@@ -70,21 +82,27 @@ export default function HeroSection({
         <div className="text-center opacity-70">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Flame className="h-4 w-4 text-primary/70" />
-            <span className="text-xl font-semibold">2,847</span>
+            <span className="text-xl font-semibold" data-testid="stat-total-burns">
+              {stats?.totalBurns?.toLocaleString() ?? "0"}
+            </span>
           </div>
           <span className="text-xs text-muted-foreground">Total Burns</span>
         </div>
         <div className="text-center opacity-70">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Percent className="h-4 w-4 text-primary/70" />
-            <span className="text-xl font-semibold">1,203</span>
+            <span className="text-xl font-semibold" data-testid="stat-discounts-claimed">
+              {stats?.discountsClaimed?.toLocaleString() ?? "0"}
+            </span>
           </div>
           <span className="text-xs text-muted-foreground">Discounts Claimed</span>
         </div>
         <div className="text-center opacity-70">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Zap className="h-4 w-4 text-primary/70" />
-            <span className="text-xl font-semibold">589</span>
+            <span className="text-xl font-semibold" data-testid="stat-active-burners">
+              {stats?.activeBurners?.toLocaleString() ?? "0"}
+            </span>
           </div>
           <span className="text-xs text-muted-foreground">Active Burners</span>
         </div>

@@ -5,6 +5,8 @@ import { submitBurnFormSchema } from "@shared/schema";
 import { generateDiscountCode } from "./utils";
 import { fetchWalletNFTs, validateMints } from "./lib/helius";
 import { appendBurnRecord, updateBurnRecord, initializeSheet, type BurnRecord } from "./lib/googleSheets";
+import nacl from "tweetnacl";
+import bs58 from "bs58";
 
 const DISCOUNT_PER_NFT = 3;
 const MAX_NFTS = 10;
@@ -41,7 +43,27 @@ export async function registerRoutes(
         return res.status(400).json({ error: parsed.error.message });
       }
 
-      const { walletAddress, email, discord, nftMints } = parsed.data;
+      const { walletAddress, email, discord, nftMints, signature, message } = parsed.data;
+
+      // Verify wallet signature to prove ownership
+      try {
+        const publicKeyBytes = bs58.decode(walletAddress);
+        const signatureBytes = bs58.decode(signature);
+        const messageBytes = new TextEncoder().encode(message);
+        
+        const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
+        if (!isValid) {
+          return res.status(401).json({ error: "Invalid wallet signature" });
+        }
+
+        // Verify the message contains expected content (prevent replay attacks)
+        if (!message.includes("Netrunner NFT Burn") || !message.includes(walletAddress)) {
+          return res.status(401).json({ error: "Invalid signature message format" });
+        }
+      } catch (sigError) {
+        console.error("Signature verification error:", sigError);
+        return res.status(401).json({ error: "Failed to verify wallet signature" });
+      }
 
       // Validate mints against allowlist
       const { valid, invalid } = validateMints(nftMints);

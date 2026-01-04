@@ -30,6 +30,8 @@ export const submitBurnFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   discord: z.string().min(2, "Discord handle required"),
   nftMints: z.array(z.string()).min(1, "At least one NFT required").max(10, "Maximum 10 NFTs"),
+  signature: z.string().min(1, "Wallet signature required"),
+  message: z.string().min(1, "Signed message required"),
 });
 
 export type SubmitBurnForm = z.infer<typeof submitBurnFormSchema>;

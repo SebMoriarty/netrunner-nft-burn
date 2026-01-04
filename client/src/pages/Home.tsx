@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Connection } from "@solana/web3.js";
+import bs58 from "bs58";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import NFTGrid from "@/components/NFTGrid";
@@ -28,7 +29,7 @@ const DISCOUNT_PER_NFT = 3;
 
 export default function Home() {
   const { toast } = useToast();
-  const { publicKey, connected, disconnect, signTransaction } = useWallet();
+  const { publicKey, connected, disconnect, signTransaction, signMessage } = useWallet();
   const { setVisible } = useWalletModal();
   
   const [appState, setAppState] = useState<AppState>("home");
@@ -110,7 +111,7 @@ export default function Home() {
   }, []);
 
   const handleSubmit = useCallback(async (data: { email: string; discord: string }) => {
-    if (!walletAddress || !publicKey || !signTransaction) return;
+    if (!walletAddress || !publicKey || !signTransaction || !signMessage) return;
     
     setIsSubmitting(true);
     setAppState("transaction");
@@ -120,11 +121,20 @@ export default function Home() {
     try {
       const nftMints = selectedNFTs.map(nft => nft.mint);
       
+      // Create and sign a message to prove wallet ownership
+      const timestamp = Date.now();
+      const message = `Netrunner NFT Burn Request\nWallet: ${walletAddress}\nNFTs: ${nftMints.length}\nTimestamp: ${timestamp}`;
+      const messageBytes = new TextEncoder().encode(message);
+      const signatureBytes = await signMessage(messageBytes);
+      const walletSignature = bs58.encode(signatureBytes);
+      
       const response = await apiRequest("POST", "/api/burn-requests", {
         walletAddress,
         email: data.email,
         discord: data.discord,
         nftMints,
+        signature: walletSignature,
+        message,
       });
       
       const burnRequest = await response.json();
@@ -143,18 +153,18 @@ export default function Home() {
       
       setTxStatus("processing");
 
-      const signature = await connection.sendRawTransaction(
+      const txSig = await connection.sendRawTransaction(
         signedTransaction.serialize(),
         { skipPreflight: false, preflightCommitment: "confirmed" }
       );
 
-      await connection.confirmTransaction(signature, "confirmed");
+      await connection.confirmTransaction(txSig, "confirmed");
       
       await apiRequest("PATCH", `/api/burn-requests/${burnRequest.id}/transaction`, {
-        txSignature: signature,
+        txSignature: txSig,
       });
       
-      setTxSignature(signature);
+      setTxSignature(txSig);
       setCodeStatus("pending");
       setAppState("confirmation");
     } catch (error) {
@@ -164,7 +174,7 @@ export default function Home() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedNFTs, walletAddress, publicKey, signTransaction]);
+  }, [selectedNFTs, walletAddress, publicKey, signTransaction, signMessage]);
 
   const handleCancelTransaction = useCallback(() => {
     setAppState("form");

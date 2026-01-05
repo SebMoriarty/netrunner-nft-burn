@@ -1,0 +1,60 @@
+I'll help you create a Replit prompt for building a documentation page for your NFT burn program. Here's a comprehensive prompt:
+
+---
+
+**Replit Prompt:**
+
+Create a modern documentation page for the Netrunner NFT Burn Program with the following specifications:
+
+**Design Requirements:**
+- Match the aesthetic from the uploaded screenshot: dark theme (black background), mint green accents (#00FFA3 or similar), clean typography
+- Responsive single-page layout
+- Use the Netrunner "N" logo in the header (or placeholder)
+- Modern, minimal design with good spacing and readability
+
+**Content Structure:**
+
+**Header:**
+- "NFT Burn Program - How It Works"
+- Brief intro: "Follow these simple steps to burn your eligible NFTs and claim your Netrunner discount"
+
+**Main Content - 6 Steps (numbered):**
+
+1. **Get Started**
+   - Click the "Get Started" button on the main page
+
+2. **Select NFTs**
+   - Select the amount of NFTs you want to burn
+   - Note: Each NFT unlocks 3% discount, stack up to 10 for maximum savings (30% off)
+
+3. **Enter Your Details**
+   - Enter your email address and Discord username
+   - Click "Burn and Claim Discount"
+
+4. **Sign the Transaction**
+   - Sign the transaction to verify you are the owner of the NFTs
+   - This sends the NFTs to our burn wallet
+
+5. **Receive Your Code**
+   - You'll receive your discount code by email within 24 hours
+   - Check your spam folder if you don't see it
+
+6. **Enjoy Netrunner**
+   - Thank you! Use your discount code at checkout
+
+**Technical Requirements:**
+- HTML/CSS/JavaScript (vanilla or React)
+- Include a "Back to Main Site" button
+- Add a FAQ section at the bottom with common questions
+- Mobile-responsive design
+- Smooth scroll animations between sections
+
+**Additional Elements:**
+- Footer with links to Main Site, Support, and Discord
+- Icon for each step (flame/burn icon, selection icon, email icon, wallet icon, gift icon, checkmark icon)
+
+Make it clean, professional, and easy to follow.
+
+---
+
+Does this capture what you need, or would you like me to adjust anything about the structure or emphasis?

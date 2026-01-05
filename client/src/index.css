@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Fonts */
+@font-face {
+  font-family: 'Auxilia';
+  src: url('/fonts/Auxilia-Black.woff2') format('woff2'),
+       url('/fonts/Auxilia-Black.woff') format('woff'),
+       url('/fonts/Auxilia-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* LIGHT MODE - Same as dark for Netrunner (dark-first brand) */
 :root {
   --button-outline: rgba(255,255,255, .08);
@@ -43,7 +54,8 @@
   --chart-3: 180 65% 45%;
   --chart-4: 120 60% 40%;
   --chart-5: 200 70% 50%;
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Auxilia', 'Outfit', ui-sans-serif, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: .375rem;
@@ -172,6 +184,11 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 900;
   }
 }
 

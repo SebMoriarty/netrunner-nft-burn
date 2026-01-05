@@ -1,9 +1,64 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
 import netroMascot from "@assets/NETRO_FIGMA_2_1765856868214.png";
 
 interface HeroSectionProps {
   onGetStarted: () => void;
+}
+
+function BlinkingMascot({ className, imgClassName }: { className?: string; imgClassName?: string }) {
+  const [isBlinking, setIsBlinking] = useState(false);
+  const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const scheduleBlink = () => {
+      const delay = 3000 + Math.random() * 2000;
+      blinkTimerRef.current = setTimeout(() => {
+        if (!mounted) return;
+        setIsBlinking(true);
+        reopenTimerRef.current = setTimeout(() => {
+          if (!mounted) return;
+          setIsBlinking(false);
+          scheduleBlink();
+        }, 200);
+      }, delay);
+    };
+
+    scheduleBlink();
+
+    return () => {
+      mounted = false;
+      if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current);
+      if (reopenTimerRef.current) clearTimeout(reopenTimerRef.current);
+    };
+  }, []);
+
+  return (
+    <div className={`relative ${className || ''}`}>
+      <img 
+        src={netroMascot} 
+        alt="Netro mascot" 
+        className={imgClassName}
+        style={{ filter: 'drop-shadow(0 0 40px rgba(0, 180, 140, 0.25))' }}
+      />
+      <div 
+        className="absolute pointer-events-none transition-opacity duration-75"
+        style={{
+          top: '28%',
+          left: '32%',
+          width: '36%',
+          height: '8%',
+          backgroundColor: 'hsl(164 20% 12%)',
+          opacity: isBlinking ? 1 : 0,
+          borderRadius: '2px',
+        }}
+      />
+    </div>
+  );
 }
 
 export default function HeroSection({
@@ -11,7 +66,7 @@ export default function HeroSection({
 }: HeroSectionProps) {
 
   return (
-    <div className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 md:px-10 py-16">
+    <div className="relative flex-1 flex flex-col items-center justify-center px-6 md:px-10 py-12">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, hsl(164 80% 45% / 0.15) 1px, transparent 0)`,
@@ -41,22 +96,16 @@ export default function HeroSection({
             </Button>
           </div>
 
-          <div className="relative flex-shrink-0 hidden lg:block">
-            <img 
-              src={netroMascot} 
-              alt="Netro mascot" 
-              className="h-64 xl:h-80 w-auto object-contain"
-              style={{ filter: 'drop-shadow(0 0 40px rgba(0, 180, 140, 0.25))' }}
+          <div className="flex-shrink-0 hidden lg:block">
+            <BlinkingMascot 
+              imgClassName="h-64 xl:h-80 w-auto object-contain"
             />
           </div>
         </div>
 
         <div className="lg:hidden flex justify-center mt-8">
-          <img 
-            src={netroMascot} 
-            alt="Netro mascot" 
-            className="h-44 w-auto object-contain"
-            style={{ filter: 'drop-shadow(0 0 25px rgba(0, 180, 140, 0.2))' }}
+          <BlinkingMascot 
+            imgClassName="h-44 w-auto object-contain"
           />
         </div>
       </div>

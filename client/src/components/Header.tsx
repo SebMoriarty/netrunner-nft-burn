@@ -1,4 +1,4 @@
-import { Wallet, Home, CheckCircle } from "lucide-react";
+import { Wallet, Home, CheckCircle, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.png";
@@ -44,6 +44,13 @@ export default function Header({
               </Link>
             </Button>
           )}
+          
+          <Button variant="ghost" size="sm" asChild className="text-muted-foreground">
+            <Link href="/docs" data-testid="link-nav-docs">
+              <FileText className="h-4 w-4 mr-1.5" />
+              Docs
+            </Link>
+          </Button>
         </div>
 
         <div className="flex items-center gap-3">

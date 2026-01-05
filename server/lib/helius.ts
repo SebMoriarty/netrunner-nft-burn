@@ -69,12 +69,9 @@ function getAssetImage(asset: DASAsset): string {
 // Get RPC URL from environment - supports QuickNode or Helius
 function getRpcUrl(): string | null {
   // QuickNode RPC URL (includes API key in the URL from env)
-  if (process.env.QUICKNODE_RPC_URL) {
-    return process.env.QUICKNODE_RPC_URL;
-  }
-  // Helius RPC URL (includes API key in the URL from env)
-  if (process.env.HELIUS_RPC_URL) {
-    return process.env.HELIUS_RPC_URL;
+  const rpcUrl = process.env.QUICKNODE_RPC_URL || process.env.VITE_RPC_ENDPOINT;
+  if (rpcUrl) {
+    return rpcUrl;
   }
   return null;
 }

@@ -48,7 +48,7 @@ export default function Header({
           <Button variant="ghost" size="sm" asChild className="text-muted-foreground">
             <Link href="/docs" data-testid="link-nav-docs">
               <FileText className="h-4 w-4 mr-1.5" />
-              Docs
+              How it works
             </Link>
           </Button>
         </div>

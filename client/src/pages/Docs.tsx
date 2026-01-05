@@ -1,4 +1,4 @@
-import { ArrowLeft, Flame, MousePointer, Mail, Wallet, Gift, CheckCircle, HelpCircle, ExternalLink } from "lucide-react";
+import { ArrowLeft, Flame, MousePointer, Mail, Wallet, Gift, CheckCircle, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -100,12 +100,8 @@ export default function Docs() {
         </Button>
 
         <div className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary/10 border border-primary/20 mb-4">
-            <HelpCircle className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-medium text-primary uppercase tracking-wide">Documentation</span>
-          </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4" data-testid="text-docs-title">
-            NFT Burn Program - How It Works
+            How It Works
           </h1>
           <p className="text-lg text-muted-foreground">
             Follow these simple steps to burn your eligible NFTs and claim your Netrunner discount.

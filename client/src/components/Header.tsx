@@ -1,4 +1,4 @@
-import { Wallet, Home } from "lucide-react";
+import { Wallet, Home, CheckCircle } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.png";
@@ -24,21 +24,22 @@ export default function Header({
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4 md:px-8 lg:px-12 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link href="/" data-testid="link-logo-home">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/98 backdrop-blur-sm">
+      <div className="px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-6">
+          <Link href="/" data-testid="link-logo-home" className="flex items-center gap-2.5">
             <img 
               src={netrunnerLogo} 
               alt="Netrunner" 
-              className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity" 
+              className="h-7 w-7 cursor-pointer" 
             />
+            <span className="text-lg font-semibold tracking-tight hidden sm:inline">Netrunner</span>
           </Link>
           
           {!isHome && (
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild className="text-muted-foreground">
               <Link href="/" data-testid="link-nav-home">
-                <Home className="h-4 w-4 mr-1" />
+                <Home className="h-4 w-4 mr-1.5" />
                 Home
               </Link>
             </Button>
@@ -48,22 +49,18 @@ export default function Header({
         <div className="flex items-center gap-3">
           {walletAddress ? (
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={onDisconnectWallet}
-              className="flex items-center gap-2 border-primary/30"
-              style={{ 
-                boxShadow: '0 0 12px rgba(82, 224, 186, 0.15), 0 2px 4px rgba(0,0,0,0.1)' 
-              }}
+              className="flex items-center gap-2"
               data-testid="button-disconnect-wallet"
             >
-              <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
+              <CheckCircle className="h-3.5 w-3.5 text-primary" />
               <span className="font-mono text-sm">
                 {truncateAddress(walletAddress)}
               </span>
             </Button>
           ) : (
             <Button
-              variant="outline"
               onClick={onConnectWallet}
               disabled={isConnecting}
               data-testid="button-connect-wallet"

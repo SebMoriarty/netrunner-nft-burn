@@ -16,16 +16,6 @@ export default function Footer() {
               Main Site
             </a>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <a href="#" data-testid="link-docs">
-              Docs
-            </a>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <a href="#" data-testid="link-support">
-              Support
-            </a>
-          </Button>
         </div>
 
         <div className="flex items-center gap-2">

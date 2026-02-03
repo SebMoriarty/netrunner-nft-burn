@@ -1,4 +1,5 @@
 import { SiDiscord, SiX } from "react-icons/si";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.png";
 
@@ -6,9 +7,9 @@ export default function Footer() {
   return (
     <footer className="border-t border-border mt-auto">
       <div className="px-4 md:px-8 lg:px-12 py-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8 opacity-80" />
-        </div>
+        <Link href="/" data-testid="link-footer-logo-home" className="flex items-center gap-2 text-muted-foreground hover-elevate rounded-md p-1">
+          <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8 opacity-80 cursor-pointer" />
+        </Link>
 
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>

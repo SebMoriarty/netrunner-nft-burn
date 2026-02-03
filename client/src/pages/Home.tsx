@@ -83,6 +83,11 @@ export default function Home() {
     setAppState("home");
   }, [disconnect]);
 
+  const handleGoHome = useCallback(() => {
+    setAppState("home");
+    setSelectedNFTs([]);
+  }, []);
+
   const handleToggleNFT = useCallback((nft: NFT) => {
     setSelectedNFTs((prev) => {
       const isSelected = prev.some((n) => n.id === nft.id);
@@ -228,6 +233,7 @@ export default function Home() {
         isConnecting={false}
         onConnectWallet={handleConnectWallet}
         onDisconnectWallet={handleDisconnectWallet}
+        onLogoClick={handleGoHome}
       />
 
       <main className="flex-1 flex flex-col">
@@ -310,7 +316,7 @@ export default function Home() {
         onRetry={handleRetryTransaction}
       />
 
-      <Footer />
+      <Footer onLogoClick={handleGoHome} />
     </div>
   );
 }

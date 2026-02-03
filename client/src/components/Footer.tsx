@@ -3,11 +3,25 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import netrunnerLogo from "@assets/Logo_-_Bright_Netrunner_copy_1765940751964.png";
 
-export default function Footer() {
+interface FooterProps {
+  onLogoClick?: () => void;
+}
+
+export default function Footer({ onLogoClick }: FooterProps) {
   return (
     <footer className="border-t border-border mt-auto">
       <div className="px-4 md:px-8 lg:px-12 py-6 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/" data-testid="link-footer-logo-home" className="flex items-center gap-2 text-muted-foreground hover-elevate rounded-md p-1">
+        <Link 
+          href="/" 
+          data-testid="link-footer-logo-home" 
+          className="flex items-center gap-2 text-muted-foreground hover-elevate rounded-md p-1"
+          onClick={(e) => {
+            if (onLogoClick) {
+              e.preventDefault();
+              onLogoClick();
+            }
+          }}
+        >
           <img src={netrunnerLogo} alt="Netrunner" className="h-8 w-8 opacity-80 cursor-pointer" />
         </Link>
 

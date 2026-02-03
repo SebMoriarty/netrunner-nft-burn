@@ -8,6 +8,7 @@ interface HeaderProps {
   isConnecting?: boolean;
   onConnectWallet: () => void;
   onDisconnectWallet?: () => void;
+  onLogoClick?: () => void;
 }
 
 export default function Header({
@@ -15,6 +16,7 @@ export default function Header({
   isConnecting = false,
   onConnectWallet,
   onDisconnectWallet,
+  onLogoClick,
 }: HeaderProps) {
   const [location] = useLocation();
   const isHome = location === "/";
@@ -23,11 +25,18 @@ export default function Header({
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (onLogoClick) {
+      e.preventDefault();
+      onLogoClick();
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/98 backdrop-blur-sm">
       <div className="px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-          <Link href="/" data-testid="link-logo-home" className="flex items-center gap-2.5">
+          <Link href="/" data-testid="link-logo-home" className="flex items-center gap-2.5" onClick={handleLogoClick}>
             <img 
               src={netrunnerLogo} 
               alt="Netrunner" 

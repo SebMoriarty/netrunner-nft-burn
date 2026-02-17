@@ -63,6 +63,10 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-3">
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground border border-border rounded-full px-3 py-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            Solana Mainnet
+          </span>
           {walletAddress ? (
             <Button
               variant="secondary"

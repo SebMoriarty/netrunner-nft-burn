@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Loader2, X, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +19,41 @@ export default function TransactionModal({
   onCancel,
   onRetry,
 }: TransactionModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const modal = modalRef.current;
+    if (modal) modal.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && status === "signing") {
+        onCancel();
+        return;
+      }
+      if (e.key === "Tab" && modal) {
+        const focusable = modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, status, onCancel]);
+
   if (!isOpen) return null;
 
   const statusMessages: Record<TransactionStatus, string> = {
@@ -28,13 +64,13 @@ export default function TransactionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-label={statusMessages[status]}>
       <div
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
         onClick={status === "signing" ? onCancel : undefined}
       />
 
-      <div className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl bg-card border border-border shadow-lg">
+      <div ref={modalRef} tabIndex={-1} className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl bg-card border border-border shadow-lg outline-none">
         {status === "error" ? (
           <div className="text-center">
             <div className="mx-auto h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">

@@ -59,14 +59,14 @@
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: .375rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.15);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.20);
+  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.25), 0px 1px 3px -1px hsl(0 0% 0% / 0.15);
+  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.25), 0px 1px 3px -1px hsl(0 0% 0% / 0.15);
+  --shadow-md: 0px 4px 6px -1px hsl(0 0% 0% / 0.30), 0px 2px 4px -2px hsl(0 0% 0% / 0.15);
+  --shadow-lg: 0px 10px 15px -3px hsl(0 0% 0% / 0.30), 0px 4px 6px -4px hsl(0 0% 0% / 0.15);
+  --shadow-xl: 0px 20px 25px -5px hsl(0 0% 0% / 0.30), 0px 8px 10px -6px hsl(0 0% 0% / 0.15);
+  --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.50);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
@@ -139,14 +139,14 @@
   --chart-3: 180 65% 45%;
   --chart-4: 120 60% 40%;
   --chart-5: 200 70% 50%;
-  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.20);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.30), 0px 1px 3px -1px hsl(0 0% 0% / 0.20);
+  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.30), 0px 1px 3px -1px hsl(0 0% 0% / 0.20);
+  --shadow-md: 0px 4px 6px -1px hsl(0 0% 0% / 0.35), 0px 2px 4px -2px hsl(0 0% 0% / 0.20);
+  --shadow-lg: 0px 10px 15px -3px hsl(0 0% 0% / 0.35), 0px 4px 6px -4px hsl(0 0% 0% / 0.20);
+  --shadow-xl: 0px 20px 25px -5px hsl(0 0% 0% / 0.35), 0px 8px 10px -6px hsl(0 0% 0% / 0.20);
+  --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.60);
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -186,9 +186,14 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2 {
     font-family: var(--font-heading);
     font-weight: 900;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
   }
 }
 

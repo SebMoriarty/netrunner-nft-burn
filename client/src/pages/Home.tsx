@@ -242,7 +242,7 @@ export default function Home() {
         )}
 
         {appState === "selecting" && (
-          <div className="px-4 md:px-8 lg:px-12 py-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8 w-full">
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-2">Your Eligible NFTs</h2>
               <p className="text-muted-foreground">

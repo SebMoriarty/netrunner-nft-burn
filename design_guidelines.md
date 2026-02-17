@@ -16,16 +16,18 @@ Drawing inspiration from leading Web3 platforms (Phantom, Magic Eden, OpenSea) w
 ## Typography
 
 **Font Stack**:
-- Primary: Inter (via Google Fonts) - clean, technical readability
+- Primary: Outfit (sans-serif) - clean, modern, geometric readability
+- Headings (H1/H2): Auxilia (Black 900) - bold display font for hero impact
+- Headings (H3-H6): Outfit (Semibold 600) - clean, readable for smaller headings
 - Monospace: JetBrains Mono - for wallet addresses, transaction signatures, codes
 
 **Hierarchy**:
-- Hero/H1: 3xl to 4xl, font-bold
-- Section Headers/H2: 2xl, font-semibold
-- Card Titles/H3: lg, font-medium
+- Hero/H1: 4xl to 6xl, Auxilia Black (font-weight: 900)
+- Section Headers/H2: 2xl, Auxilia Black (font-weight: 900)
+- Card Titles/H3: lg, Outfit Semibold (font-weight: 600)
 - Body: base, font-normal
 - Labels/Captions: sm, font-medium
-- Mono Data: sm to base, monospace
+- Mono Data: xs to sm, monospace
 
 ## Layout System
 

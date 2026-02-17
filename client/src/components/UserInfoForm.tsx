@@ -99,7 +99,7 @@ export default function UserInfoForm({
                       <div className="relative">
                         <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="username#1234"
+                          placeholder="@username"
                           className="pl-10"
                           data-testid="input-discord"
                           {...field}
